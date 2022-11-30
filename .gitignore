@@ -39,3 +39,4 @@ target/
 
 #Leonid
 /project
+.scalafmt.conf

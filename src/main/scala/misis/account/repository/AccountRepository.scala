@@ -5,9 +5,10 @@ import java.util.UUID
 
 trait AccountRepository {
   def list(): List[Account]
-  def createAccount(account: CreateAccount): Account
-  def updateAccountNumberPhone(account: UpdateAccountNumberPhone): Option[Account]
-  def updateAccountMoneyPlus(account: UpdateAccountMoneyPlus): Option[Account]
-  def updateAccountMoneyMinus(account: UpdateAccountMoneyMinus): Option[Account]
-  def deleteAccount(id: UUID): Option[Account]
+  def get(id: UUID): Account
+  def create(account: CreateAccount): Account
+  def updateNumberPhone(account: UpdateAccountNumberPhone): Option[Account]
+  def updateMoneyPlus(account: UpdateAccountMoneyPlus): Option[Account]
+  def updateMoneyMinus(account: UpdateAccountMoneyMinus): Option[Account]
+  def delete(id: UUID): Option[Account]
 }

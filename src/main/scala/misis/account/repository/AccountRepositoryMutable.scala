@@ -12,16 +12,19 @@ class AccountRepositoryMutable extends AccountRepository {
   override def list(): scala.List[Account] = {
     store.values.toList
   }
-  override def createAccount(create: CreateAccount): Account = {
+  override def get(id: UUID): Account = {
+    store(id)
+  }
+  override def create(createAccount: CreateAccount): Account = {
     val account = Account(
       id = UUID.randomUUID(),
-      numberPhone = create.numberPhone,
-      money = create.money
+      numberPhone = createAccount.numberPhone,
+      money = createAccount.money
     )
     store.put(account.id, account)
     account
   }
-  override def updateAccountNumberPhone(update: UpdateAccountNumberPhone): Option[Account] = {
+  override def updateNumberPhone(update: UpdateAccountNumberPhone): Option[Account] = {
     store.get(update.id).map { account =>
       val updated = account.copy(numberPhone = update.numberPhone)
       store.put(account.id, updated)
@@ -29,7 +32,7 @@ class AccountRepositoryMutable extends AccountRepository {
     }
   }
 
-  override def updateAccountMoneyPlus(update: UpdateAccountMoneyPlus): Option[Account] = {
+  override def updateMoneyPlus(update: UpdateAccountMoneyPlus): Option[Account] = {
     store.get(update.id).map { account =>
     //   if(update.money < 0) {
     //     update.money = 0
@@ -39,7 +42,7 @@ class AccountRepositoryMutable extends AccountRepository {
       updated
     }
   }
-    override def updateAccountMoneyMinus(update: UpdateAccountMoneyMinus): Option[Account] = {
+    override def updateMoneyMinus(update: UpdateAccountMoneyMinus): Option[Account] = {
     store.get(update.id).map { account =>
     //   if(update.money < 0 | account.money < update.money) {
     //     update.money = 0
@@ -49,7 +52,8 @@ class AccountRepositoryMutable extends AccountRepository {
       updated
     }
   }
-  override def deleteAccount(id: UUID): Option[Account] = {
+  override def delete(id: UUID): Option[Account] = {
     store.remove(id)
   }
+
 }

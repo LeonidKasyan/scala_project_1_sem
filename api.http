@@ -1,1 +1,18 @@
-GET http://localhost:8080/account
+GET http://localhost:8080/accounts
+
+###
+POST http://localhost:8080/cudaccount
+Content-Type: application/json
+
+{"numberPhone": 1, "money": 1}
+
+###
+GET http://localhost:8080/cudaccount/396c1bbd-99aa-4c73-93e0-acd4561ba318
+
+###
+PUT http://localhost:8080/cudaccount
+Content-Type: application/json
+
+{"id": "396c1bbd-99aa-4c73-93e0-acd4561ba318","numberPhone": 2}
+
+

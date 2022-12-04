@@ -1,18 +1,31 @@
 GET http://localhost:8080/accounts
 
 ###
-POST http://localhost:8080/cudaccount
+POST http://localhost:8080/account
 Content-Type: application/json
 
 {"numberPhone": 1, "money": 1}
 
 ###
-GET http://localhost:8080/cudaccount/396c1bbd-99aa-4c73-93e0-acd4561ba318
-
-###
-PUT http://localhost:8080/cudaccount
+POST http://localhost:8080/account
 Content-Type: application/json
 
-{"id": "396c1bbd-99aa-4c73-93e0-acd4561ba318","numberPhone": 2}
+{"numberPhone": 2, "money": 2}
 
+###
+POST http://localhost:8080/account
+Content-Type: application/json
 
+{"numberPhone": 3, "money": 3}
+
+###
+GET http://localhost:8080/account/e2084059-d027-4a32-a333-b6e8e60d58ca
+
+###
+PUT http://localhost:8080/account
+Content-Type: application/json
+
+{"id": "e2084059-d027-4a32-a333-b6e8e60d58ca","numberPhone": 11}
+
+###
+DELETE http://localhost:8080/account/e2084059-d027-4a32-a333-b6e8e60d58ca

@@ -17,21 +17,7 @@ object AccountHttpApp extends App with FailFastCirceSupport {
   implicit val system: ActorSystem = ActorSystem("AccountApp")
   val repository = new AccountRepositoryMutable
 
-  // содздание счета
-  val acc1 = repository.create(CreateAccount(1111, 500))
-  // обновление номера телефона
-  val acc2 = repository.create(CreateAccount(2222, 400))
-  repository.updateNumberPhone(UpdateAccountNumberPhone(acc2.id, 2223))
-  // удаление счета
-  val acc3 = repository.create(CreateAccount(3333, 300))
-  repository.delete(acc3.id)
-  // Пополнение счета
-  val acc4 = repository.create(CreateAccount(4444, 0))
-  repository.updateMoneyPlus(UpdateAccountMoneyPlus(acc4.id, 500))
-  // Снять денги со счета
-  val acc5 = repository.create(CreateAccount(5555, 500))
-  repository.updateMoneyMinus(UpdateAccountMoneyMinus(acc5.id, 400))
-
+  
 
   val route: Route =
     (path("hello") & get){
@@ -41,23 +27,23 @@ object AccountHttpApp extends App with FailFastCirceSupport {
           val list =  repository.list()
           complete(list)
         } ~
-        path("cudaccount"){ //cud - create update delete
+        path("account"){
           (post & entity(as[CreateAccount])) { newAccount =>
             complete(repository.create(newAccount))
           }
         } ~
-        path("cudaccount" / JavaUUID){ id=>
+        path("account" / JavaUUID){ id=>
           get{
             complete(repository.get(id))
           }
         } ~
-        path("cudaccount"){ 
+        path("account"){ 
           (put & entity(as[UpdateAccountNumberPhone])){
             updateNumberPhone =>
             complete(repository.updateNumberPhone(updateNumberPhone))
           }
         } ~
-        path("cudaccount" / JavaUUID){ id=>
+        path("account" / JavaUUID){ id=>
           delete{
             complete(repository.delete(id))
           }
@@ -65,7 +51,7 @@ object AccountHttpApp extends App with FailFastCirceSupport {
 
 
 
-
   Http().newServerAt("0.0.0.0", port = 8080).bind(route)
+  println("[info] server is running, enter any character to disable it")
   StdIn.readLine()
 }

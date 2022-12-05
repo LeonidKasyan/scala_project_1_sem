@@ -5,17 +5,19 @@ import misis.account.repository._
 
 import java.util.UUID
 import scala.collection.mutable
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
-class AccountRepositoryMutable extends AccountRepository {
+class AccountRepositoryMutable(implicit val ec: ExecutionContext) extends AccountRepository {
   private val store = mutable.Map[UUID, Account]()
 
-  override def list(): scala.List[Account] = {
+  override def list():  Future[scala.List[Account]] = Future{
     store.values.toList
   }
-  override def get(id: UUID): Account = {
+  override def get(id: UUID): Future[Account] = Future{
     store(id)
   }
-  override def create(createAccount: CreateAccount): Account = {
+  override def create(createAccount: CreateAccount): Future[Account] = Future{
     val account = Account(
       id = UUID.randomUUID(),
       numberPhone = createAccount.numberPhone,
@@ -24,7 +26,7 @@ class AccountRepositoryMutable extends AccountRepository {
     store.put(account.id, account)
     account
   }
-  override def updateNumberPhone(update: UpdateAccountNumberPhone): Option[Account] = {
+  override def updateNumberPhone(update: UpdateAccountNumberPhone): Future[Option[Account]] = Future{
     store.get(update.id).map { account =>
       val updated = account.copy(numberPhone = update.numberPhone)
       store.put(account.id, updated)
@@ -32,7 +34,7 @@ class AccountRepositoryMutable extends AccountRepository {
     }
   }
 
-  override def updateMoneyPlus(update: UpdateAccountMoneyPlus): Option[Account] = {
+  override def updateMoneyPlus(update: UpdateAccountMoneyPlus): Future[Option[Account]] = Future{
     store.get(update.id).map { account =>
     //   if(update.money < 0) {
     //     update.money = 0
@@ -42,7 +44,7 @@ class AccountRepositoryMutable extends AccountRepository {
       updated
     }
   }
-    override def updateMoneyMinus(update: UpdateAccountMoneyMinus): Option[Account] = {
+    override def updateMoneyMinus(update: UpdateAccountMoneyMinus): Future[Option[Account]] = Future{
     store.get(update.id).map { account =>
     //   if(update.money < 0 | account.money < update.money) {
     //     update.money = 0
@@ -52,7 +54,7 @@ class AccountRepositoryMutable extends AccountRepository {
       updated
     }
   }
-  override def delete(id: UUID): Option[Account] = {
+  override def delete(id: UUID): Future[Option[Account]] = Future{
     store.remove(id)
   }
 

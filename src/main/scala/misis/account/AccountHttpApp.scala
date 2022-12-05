@@ -16,6 +16,7 @@ import misis.account.route._
 
 object AccountHttpApp extends App with FailFastCirceSupport {
   implicit val system: ActorSystem = ActorSystem("AccountApp")
+  implicit val ec = system.dispatcher
   val repository = new AccountRepositoryMutable
   val helloRoute = new HelloRoute().route
   val accountRoute = new AccountRoute(repository).route

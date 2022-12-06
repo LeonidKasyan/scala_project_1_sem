@@ -8,7 +8,7 @@ import scala.collection.mutable
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 
-class AccountRepositoryMutable(implicit val ec: ExecutionContext) extends AccountRepository {
+class AccountRepositoryInMemory(implicit val ec: ExecutionContext) extends AccountRepository {
   private val myCart = mutable.Map[UUID, Account]()
 
   override def list():  Future[scala.List[Account]] = Future{

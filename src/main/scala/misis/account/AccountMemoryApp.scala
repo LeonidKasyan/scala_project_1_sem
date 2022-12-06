@@ -14,10 +14,10 @@ import misis.account.repository._
 import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
 import misis.account.route._
 
-object AccountApp extends App with FailFastCirceSupport {
+object AccountMemoryApp extends App with FailFastCirceSupport {
   implicit val system: ActorSystem = ActorSystem("AccountApp")
   implicit val ec = system.dispatcher
-  val repository = new AccountRepositoryMutable
+  val repository = new AccountRepositoryInMemory
   val helloRoute = new HelloRoute().route
   val accountRoute = new AccountRoute(repository).route
 

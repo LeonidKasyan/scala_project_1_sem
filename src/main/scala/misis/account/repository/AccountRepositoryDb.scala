@@ -42,24 +42,29 @@ class AccountRepositoryDb(implicit val ec: ExecutionContext, db: Database) exten
   }
 
   override def updateMoneyPlus(account: UpdateAccountMoneyPlus): Future[Option[Account]] = {
+    //  moneyBack <- accountTable.filter(_.id === account.id).map(_.money).result.head
+
      for {
+            moneyBack <- find(account.id)
             _ <- db.run {
                 accountTable
                     .filter(_.id === account.id)
                     .map(_.money)
-                    .+=(account.money)
+                    .update(moneyBack.get.money + account.money)
             }
             res <- find(account.id)
+            
         } yield res
   }
 
   override def updateMoneyMinus(account: UpdateAccountMoneyMinus): Future[Option[Account]] = {
      for {
+            moneyBack <- find(account.id)
             _ <- db.run {
                 accountTable
                     .filter(_.id === account.id)
                     .map(_.money)
-                    .+=(-account.money)
+                    .update(moneyBack.get.money - account.money)
             }
             res <- find(account.id)
         } yield res

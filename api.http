@@ -19,13 +19,13 @@ Content-Type: application/json
 {"numberPhone": 3, "money": 3}
 
 ###
-GET http://localhost:8080/account/e2084059-d027-4a32-a333-b6e8e60d58ca
+GET http://localhost:8080/account/f7f5eaf1-4624-46ae-be9d-efd5327e3ddc
 
 ###
 PUT http://localhost:8080/account
 Content-Type: application/json
 
-{"id": "e2084059-d027-4a32-a333-b6e8e60d58ca","numberPhone": 11}
+{"id": "f7f5eaf1-4624-46ae-be9d-efd5327e3ddc","numberPhone": 11}
 
 ###
-DELETE http://localhost:8080/account/e2084059-d027-4a32-a333-b6e8e60d58ca
+DELETE http://localhost:8080/account/f7f5eaf1-4624-46ae-be9d-efd5327e3ddc

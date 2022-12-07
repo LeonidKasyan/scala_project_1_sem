@@ -54,7 +54,7 @@ class AccountRepositoryInMemory(implicit val ec: ExecutionContext) extends Accou
       updated
     }
   }
-  override def delete(id: UUID): Future[Option[Account]] = Future{
+  override def delete(id: UUID): Future[Unit] = Future{
     myCart.remove(id)
   }
 

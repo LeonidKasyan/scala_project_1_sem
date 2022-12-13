@@ -25,9 +25,10 @@ object AccountDbApp extends App with FailFastCirceSupport {
   val repository = new AccountRepositoryDb
   val helloRoute = new HelloRoute().route
   val accountRoute = new AccountRoute(repository).route
+  val transferAccountRoute = new TransferAccountRoute(repository).route
 
 
-  Http().newServerAt("0.0.0.0", port = 8080).bind(helloRoute ~ accountRoute)
+  Http().newServerAt("0.0.0.0", port = 8080).bind(helloRoute ~ accountRoute ~ transferAccountRoute)
   println("Server is running, enter any character to disable it")
   StdIn.readLine()
 }

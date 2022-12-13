@@ -15,6 +15,7 @@ lazy val postgresVersion = "42.3.1"
 lazy val root = (project in file("."))
   .settings(
     name := "project",
+    Compile / run / mainClass := Some("misis.account.AccountDbApp"),
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,

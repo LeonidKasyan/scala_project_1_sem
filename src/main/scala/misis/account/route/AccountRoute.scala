@@ -57,14 +57,5 @@ class AccountRoute(repository: AccountRepository)(implicit ec: ExecutionContext)
             }
         
         }
-    }~
-    path("transfer"){ 
-        (put & entity(as[TransferAccount])){moneyTransfer =>
-        onSuccess(repository.moneyTransfer(moneyTransfer)){
-            case Right(value) => complete(value)
-            case Left(s) => complete(StatusCodes.NotAcceptable,s)
-            }
-        
-        }
     }
 }

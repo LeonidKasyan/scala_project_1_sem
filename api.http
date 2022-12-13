@@ -41,3 +41,9 @@ PUT http://localhost:8080/account/money/minus
 Content-Type: application/json
 
 {"id": "38bbb792-4a73-4b8b-81a8-0c9d9136659c","money": 1}
+
+###
+PUT http://localhost:8080/transfer
+Content-Type: application/json
+
+{"idPlus": "38bbb792-4a73-4b8b-81a8-0c9d9136659c","idMinus": "1e9443f2-809a-4921-ae4e-a59732a17b36","moneyChange": 1}

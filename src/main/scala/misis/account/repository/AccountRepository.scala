@@ -12,5 +12,6 @@ trait AccountRepository {
   def updateNumberPhone(account: UpdateAccountNumberPhone):  Future[Option[Account]]
   def updateMoneyPlus(account: UpdateAccountMoneyPlus):  Future[Either[String,Account]]
   def updateMoneyMinus(account: UpdateAccountMoneyMinus):  Future[Either[String,Account]]
+  def moneyTransfer(transferAccounts:TransferAccount):  Future[Either[String,ChangeAccountResult]]
   def delete(id: UUID):  Future[Unit]
 }

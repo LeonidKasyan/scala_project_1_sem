@@ -49,6 +49,8 @@ class AccountRepositoryInMemory(implicit val ec: ExecutionContext) extends Accou
       Right(updated)
     }.getOrElse(Left("Не найден элемент"))
   }
+
+  override def moneyTransfer(transferAccounts: TransferAccount): Future[Either[String,ChangeAccountResult]] = ???
   override def delete(id: UUID): Future[Unit] = Future{
     myCart.remove(id)
   }

@@ -28,16 +28,16 @@ Content-Type: application/json
 {"id": "f7f5eaf1-4624-46ae-be9d-efd5327e3ddc","numberPhone": 11}
 
 ###
-DELETE http://localhost:8080/account/ceadfca2-d085-4577-ad93-db12303c6575
+DELETE http://localhost:8080/account/f75a460c-3cc1-4531-8866-f8e0ac5d3c77
 
 ###
-PUT http://localhost:8080/accountmoneyplus
+PUT http://localhost:8080/account/money/plus
 Content-Type: application/json
 
-{"id": "ceadfca2-d085-4577-ad93-db12303c6575","money": 100}
+{"id": "38bbb792-4a73-4b8b-81a8-0c9d9136659c","money": 1}
 
 ###
-PUT http://localhost:8080/accountmoneyminus
+PUT http://localhost:8080/account/money/minus
 Content-Type: application/json
 
-{"id": "ceadfca2-d085-4577-ad93-db12303c6575","money": 100}
+{"id": "38bbb792-4a73-4b8b-81a8-0c9d9136659c","money": 1}

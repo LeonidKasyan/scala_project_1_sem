@@ -6,6 +6,8 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 import slick.jdbc.PostgresProfile.api._
 import misis.account.db.AccountDb._
+import scala.Error
+import scala.util.Either
 
 
 class AccountRepositoryDb(implicit val ec: ExecutionContext, db: Database) extends AccountRepository {
@@ -41,38 +43,53 @@ class AccountRepositoryDb(implicit val ec: ExecutionContext, db: Database) exten
         } yield res
   }
 
-  override def updateMoneyPlus(account: UpdateAccountMoneyPlus): Future[Option[Account]] = {
-    //  moneyBack <- accountTable.filter(_.id === account.id).map(_.money).result.head
-
-     for {
-            moneyBack <- find(account.id)
-            _ <- db.run {
-                accountTable
-                    .filter(_.id === account.id)
-                    .map(_.money)
-                    .update(moneyBack.get.money + account.money)
-            }
-            res <- find(account.id)
-            
-        } yield res
+  override def updateMoneyPlus(account: UpdateAccountMoneyPlus): Future[Either[String,Account]] = {
+   val query = accountTable
+                .filter(_.id === account.id)
+                .map(_.money)
+    for {
+        oldBalansOpt <- db.run(query.result.headOption)
+        deltaBalans = account.money
+        updateBalans = oldBalansOpt.map{oldBalans =>
+          Right( oldBalans + deltaBalans)
+          }.getOrElse(Left("Не найдено элемент"))
+        future = updateBalans.map(balans => db.run {query.update(balans)}) match {
+          case Right(futute) => futute.map(Right(_))
+          case Left(s) => Future.successful(Left(s))
+          
+        }
+        updated <- future
+        res <- find(account.id)   
+        res2 = updated.map(_ => res.get) 
+        } yield res2
   }
 
-  override def updateMoneyMinus(account: UpdateAccountMoneyMinus): Future[Option[Account]] = {
-     for {
-            moneyBack <- find(account.id)
-            _ <- db.run {
-                accountTable
-                    .filter(_.id === account.id)
-                    .map(_.money)
-                    .update(moneyBack.get.money - account.money)
-            }
-            res <- find(account.id)
-        } yield res
+  override def updateMoneyMinus(account: UpdateAccountMoneyMinus): Future[Either[String,Account]] = {
+    val query = accountTable
+                .filter(_.id === account.id)
+                .map(_.money)
+    for {
+        oldBalansOpt <- db.run(query.result.headOption)
+        deltaBalans = account.money
+        updateBalans = oldBalansOpt.map{oldBalans =>
+            if ((oldBalans - deltaBalans) < 0)
+              Left("Недостаточно денег на счету")
+            else Right( oldBalans - deltaBalans)
+          }.getOrElse(Left("Не найдено элемент"))
+        future = updateBalans.map(balans => db.run {query.update(balans)}) match {
+          case Right(futute) => futute.map(Right(_))
+          case Left(s) => Future.successful(Left(s))
+          
+        }
+        updated <- future
+        res <- find(account.id)   
+        res2 = updated.map(_ => res.get) 
+        } yield res2
   }
+  
 
   override def delete(id: UUID): Future[Unit] ={
      db.run(accountTable.filter(_.id === id).delete).map(_ => ())
   }
-
-  
 }
+

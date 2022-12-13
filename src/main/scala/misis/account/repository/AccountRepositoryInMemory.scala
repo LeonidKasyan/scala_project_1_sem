@@ -7,6 +7,7 @@ import java.util.UUID
 import scala.collection.mutable
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
+import scala.util.Either
 
 class AccountRepositoryInMemory(implicit val ec: ExecutionContext) extends AccountRepository {
   private val myCart = mutable.Map[UUID, Account]()
@@ -34,25 +35,19 @@ class AccountRepositoryInMemory(implicit val ec: ExecutionContext) extends Accou
     }
   }
 
-  override def updateMoneyPlus(update: UpdateAccountMoneyPlus): Future[Option[Account]] = Future{
+  override def updateMoneyPlus(update: UpdateAccountMoneyPlus): Future[Either[String,Account]] = Future{
     myCart.get(update.id).map { account =>
-    //   if(update.money < 0) {
-    //     update.money = 0
-    //   }
       val updated = account.copy(money = account.money + update.money)
       myCart.put(account.id, updated)
-      updated
-    }
+      Right(updated)
+    }.getOrElse(Left("Не найден элемент"))
   }
-    override def updateMoneyMinus(update: UpdateAccountMoneyMinus): Future[Option[Account]] = Future{
+    override def updateMoneyMinus(update: UpdateAccountMoneyMinus): Future[Either[String,Account]] = Future{
     myCart.get(update.id).map { account =>
-    //   if(update.money < 0 | account.money < update.money) {
-    //     update.money = 0
-    //   }
       val updated = account.copy(money = account.money - update.money)
       myCart.put(account.id, updated)
-      updated
-    }
+      Right(updated)
+    }.getOrElse(Left("Не найден элемент"))
   }
   override def delete(id: UUID): Future[Unit] = Future{
     myCart.remove(id)

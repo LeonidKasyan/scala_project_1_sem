@@ -2,14 +2,18 @@ package misis.account.route
 
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.model._
 import de.heikoseeberger.akkahttpcirce._
 import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
+import scala.util.{Success,Failure}
+import scala.concurrent.ExecutionContext
 
 import misis.account.model._
 import misis.account.repository._
+import akka.actor.Status
 
 
-class AccountRoute(repository: AccountRepository) extends  FailFastCirceSupport {
+class AccountRoute(repository: AccountRepository)(implicit ec: ExecutionContext) extends  FailFastCirceSupport {
   def route = 
     (path("accounts")& get) {
         val list =  repository.list()
@@ -35,17 +39,23 @@ class AccountRoute(repository: AccountRepository) extends  FailFastCirceSupport 
         delete{
         complete(repository.delete(id))
         }
+        
     } ~
-    path("accountmoneyplus"){ 
-        (put & entity(as[UpdateAccountMoneyPlus])){
-        updateMoneyPlus =>
-        complete(repository.updateMoneyPlus(updateMoneyPlus))
+    path("account" /"money" / "plus"){ 
+        (put & entity(as[UpdateAccountMoneyPlus])){updateMoneyPlus =>
+        onSuccess(repository.updateMoneyPlus(updateMoneyPlus)){
+            case Right(value) => complete(value)
+            case Left(s) => complete(StatusCodes.NotAcceptable,s)
+            }
         }
     } ~
-    path("accountmoneyminus"){ 
-        (put & entity(as[UpdateAccountMoneyMinus])){
-        updateMoneyMinus =>
-        complete(repository.updateMoneyMinus(updateMoneyMinus))
+    path("account" /"money" / "minus"){ 
+        (put & entity(as[UpdateAccountMoneyMinus])){updateMoneyMinus =>
+        onSuccess(repository.updateMoneyMinus(updateMoneyMinus)){
+            case Right(value) => complete(value)
+            case Left(s) => complete(StatusCodes.NotAcceptable,s)
+            }
+        
         }
     }
 }

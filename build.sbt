@@ -11,7 +11,7 @@ val circeVersion = "0.14.1"
 val AkkaHttpJsonVersion = "1.39.2"
 lazy val slickVersion = "3.3.3"
 lazy val postgresVersion = "42.3.1"
-
+ 
 lazy val root = (project in file("."))
   .settings(
     name := "project",

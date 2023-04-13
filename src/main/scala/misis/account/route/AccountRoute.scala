@@ -35,7 +35,7 @@ class AccountRoute(repository: AccountRepository)(implicit ec: ExecutionContext)
         complete(repository.updateNumberPhone(updateNumberPhone))
         }
     } ~
-    path("account" / JavaUUID){ id=>
+    path("account"/ "delete" / JavaUUID){ id=>
         delete{
         complete(repository.delete(id))
         }

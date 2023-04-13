@@ -1,7 +1,8 @@
 ARG APP_BUILDER=openjdk:11
-ARG APP_RUNNER=${APP_BUILDER}
+ARG APP_RUNNER=$APP_BUILDER
 
-FROM ${APP_BUILDER} as builder
+# 1. Образ сборки
+FROM $APP_BUILDER as builder
 
 RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list
 RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list
@@ -10,16 +11,16 @@ RUN apt-get update
 RUN apt-get install sbt
 
 WORKDIR /build
-COPY . . 
-COPY ./service2/ .
-COPY ./.env .env
+COPY . .
 RUN sbt stage
 
-FROM ${APP_RUNNER}
+
+
+# 2. Образ запуска
+FROM $APP_RUNNER
 
 WORKDIR /app
-COPY --from=builder /build/target/universaL/stage/bin bin
-COPY --from=builder /build/target/universaL/stage/lib lib
+COPY --from=builder /build/target/universal/stage/bin bin
+COPY --from=builder /build/target/universal/stage/lib lib
 
-#money-db-app ?????
-ENTRYPOINT sleep 2 && bin/money-db-app
+ENTRYPOINT sleep 2 && bin/account-db-app

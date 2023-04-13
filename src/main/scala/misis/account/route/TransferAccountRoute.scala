@@ -22,5 +22,13 @@ class TransferAccountRoute(repository: AccountRepository)(implicit ec: Execution
             }
         
         }
-    }
+    } ~
+          path("transfer" / "external") {
+              (put & entity(as[TransferAccount])) { moneyTransfer =>
+                  onSuccess(repository.moneyTransfer(moneyTransfer)) {
+                      case Right(value) => complete(value)
+                      case Left(s) => complete(StatusCodes.NotAcceptable, s)
+                  }
+              }
+          }
 }

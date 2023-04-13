@@ -16,6 +16,7 @@ import misis.account.model._
 import misis.account.repository._
 import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
 import misis.account.route._
+import misis.account.repository.PaymentClient
 
 object AccountDbApp extends App with FailFastCirceSupport {
   implicit val system: ActorSystem = ActorSystem("AccountApp")
@@ -24,7 +25,8 @@ object AccountDbApp extends App with FailFastCirceSupport {
   val port = ConfigFactory.load().getInt("port")
 
   new InitDb().prepare()
-  val repository = new AccountRepositoryDb
+  val paymentClient = new PaymentClient
+  val repository = new AccountRepositoryDb(paymentClient)
   val helloRoute = new HelloRoute().route
   val accountRoute = new AccountRoute(repository).route
   val transferAccountRoute = new TransferAccountRoute(repository).route

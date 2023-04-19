@@ -15,7 +15,7 @@ Content-Type: application/json
 PUT http://localhost:8080/transfer/external
 Content-Type: application/json
 
-{"idPlus": "bd047d20-9605-4568-ac06-c54d407f5901","idMinus": "7741b38c-d962-4e16-ac49-53331f629085","moneyChange": 100}
+{"idPlus": "bd047d20-9605-4568-ac06-c54d407f5901","idMinus": "3e2254f6-9cfe-4d7e-9da6-20a7d4e7d304","moneyChange": 100}
 
 
 

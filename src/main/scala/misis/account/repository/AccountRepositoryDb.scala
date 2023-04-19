@@ -91,47 +91,6 @@ class AccountRepositoryDb(paymentClient: PaymentClient)(implicit val ec: Executi
   }
 
 
-  //  override def moneyTransfer(transferAccounts: TransferAccount): Future[Either[String,ChangeAccountResult]] = {
-//    val accountMinus =
-//      accountTable.filter(_.id === transferAccounts.idMinus).map(_.money)
-//    val accountPlus =
-//      accountTable.filter(_.id === transferAccounts.idPlus).map(_.money)
-//    for {
-//      accountMinusOpt <- db.run(accountMinus.result.headOption)//  аккаунт отправителя
-//      accountPlusOpt <- db.run(accountPlus.result.headOption)// аккаунт получателя
-//      transferMoney = transferAccounts.moneyChange// сумма денег с которой мы работаем
-//      accountMinusUpd = accountMinusOpt.map{ sendlerMoney =>
-//        {
-//          if(sendlerMoney>= transferMoney)
-//            Right(sendlerMoney - transferMoney)
-//          else
-//            Left("Недостаточно денег для перевода")
-//        }
-//      }.getOrElse(Left("Счет не найден"))
-//      accountPlusUpd = accountMinusOpt.map{ recipientMoney =>
-//        {
-//          Right(recipientMoney + transferMoney)
-//        }
-//      }.getOrElse(Left("Счет не найден"))
-//      accountMinusFuture = accountMinusUpd.map{money =>
-//        db.run{accountMinus.update(money)}
-//      } match{
-//        case Right(future) => {
-//          accountPlusUpd.map(money=>
-//            db.run{accountPlus.update(money)}
-//          ) match{
-//            case Right(future) => future.map(Right(_))
-//            case Left(s) => Future.successful(Left(s))
-//          }
-//        }
-//        case Left(s) => Future.successful(Left(s))
-//      }
-//      updated <- accountMinusFuture
-//      res <- find(transferAccounts.idMinus)
-//    } yield updated.map(_=>
-//      ChangeAccountResult(transferAccounts.idMinus,res.get.money))
-//
-//  }
   override def moneyTransfer(transferAccounts: TransferAccount): Future[Either[String, ChangeAccountResult]] = {
     val accountMinus =
       accountTable.filter(_.id === transferAccounts.idMinus).map(_.money)
@@ -162,14 +121,16 @@ class AccountRepositoryDb(paymentClient: PaymentClient)(implicit val ec: Executi
       } match {
         case Right(future) =>
           paymentClient.payment(UpdateAccountMoneyPlus(transferAccounts.idPlus, transferAccounts.moneyChange))
-            .map {
+            .flatMap {
               case Right(_) =>
-                Right("Деньги успешно переведены")
-              case Left(error) =>
-                // Ошибка при возврате средств, вернуть отправителю деньги
-                db.run(accountMinus.update(accountMinusOpt.getOrElse(0)))
-                Left(s"Ошибка при возврате средств: $error")
+                Future.successful(Right("Деньги успешно переведены"))
+              case Left(_) =>
+                db.run(accountMinus.update(accountMinusOpt.get + transferMoney)).map {
+                  case 0 => Left("Не удалось обновить баланс счета отправителя")
+                  case _ => Right("Деньги успешно возвращены")
+                }
             }
+
 
         case Left(s) => Future.successful(Left(s))
       }
@@ -179,6 +140,10 @@ class AccountRepositoryDb(paymentClient: PaymentClient)(implicit val ec: Executi
       ChangeAccountResult(transferAccounts.idMinus, res.get.money))
 
   }
+
+
+
+
 
   override def delete(id: UUID): Future[Unit] ={
      db.run(accountTable.filter(_.id === id).delete).map(_ => ())
